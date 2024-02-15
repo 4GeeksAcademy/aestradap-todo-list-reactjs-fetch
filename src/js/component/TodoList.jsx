@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Todo from './Todo';
-import { createNewTodoList } from './dataSync/todoFechtApi.jsx';
+import { createData, getData, updateData } from './dataSync/todoFechtApi.jsx';
 
 const TodoList = () => {
 	
-	const [todoList, setTodoList] = useState([
-		{id: 0 , description: "Make the Bed "},
-		{id: 1, description: "Wash my hands"},
-		{id: 2 , description: "Eat"},
-		{id: 3, description: "Walk the dog"}]);
+	const [todoList, setTodoList] = useState([]);
+
 	
 	const [newTodo, setNewTodo] = useState('');
 
+	const getUserTodoList = async (defaultUser) => {
+		const defaultUserTodoList  = await getTodoList(defaultUser);
+		if(defaultUserTodoList) setTodoList(defaultUserTodoList);
+	};
+
 	useEffect(() => {
-		createNewTodoList('aestradap');
+		//const defaultUser = createNewTodoList('aestradap');
+		getUserTodoList('aestradap');		
 	},[]);
 	
 	const handlerSummitTask = (e) => {
@@ -21,18 +24,19 @@ const TodoList = () => {
 			setTodoList([
 				...todoList,
 				{
+					done: false,
 					id: todoList.length,
-					description:newTodo
+					label:newTodo
 				}
 			]);
 			setNewTodo('');
 		}
 	}
 
-	const handlerEdit = (id, description) => {
-		console.log(id,description)
+	const handlerEdit = (id, label) => {
+		console.log(id,label)
         let newList = [...todoList];
-		newList[id] = {id:id, description: description};
+		newList[id] = {id:id, label: label};
 		setTodoList(newList);
     }
 

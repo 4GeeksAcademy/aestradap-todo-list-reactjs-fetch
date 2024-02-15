@@ -4,8 +4,8 @@ import { SdCard, X } from 'react-bootstrap-icons';
 
 const Todo = ({todo, handlerEdit, handlerDelete}) => {
 
-  const {id, description} = todo;
-	const [myTodo, setMyTodo] = useState(description);
+  const {id, done, label} = todo;
+	const [myTodo, setMyTodo] = useState(label);
 
   const [display, setDisplay] = useState("notdisplayed");
 
@@ -31,7 +31,7 @@ const Todo = ({todo, handlerEdit, handlerDelete}) => {
       />
       
       {
-      description !== myTodo
+      label !== myTodo
         ?  
         <div className="d-flex"
           onMouseEnter={e => showButton(e)}

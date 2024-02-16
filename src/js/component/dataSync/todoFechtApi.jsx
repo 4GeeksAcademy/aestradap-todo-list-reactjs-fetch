@@ -24,7 +24,7 @@ export const createData = async ( username ) => {
 
 //get a existing todoList for a user
 export const getData = async (username) => {
-  const response = await fetch(`${apiUrl}user/${username}`);
+  const response = await fetch(`${apiUrl}${username}`);
   if (response.ok) {
       const data = response.json();
       console.log(data);
@@ -36,10 +36,11 @@ export const getData = async (username) => {
 };
 
 //update the entire todolist for a user
-export const updateData = async () => {
-    const response = await fetch(`${apiUrluser/}`, {
+export const updateData = async (username, data) => {
+    console.log(JSON.stringify(data))
+    const response = await fetch(`${apiUrl}${username}`, {
         method: 'PUT',
-        body: JSON.stringify(dataToSend),  // the variable dataToSend can be a 'string' or an {object} that comes from somewhere else in our application
+        body: JSON.stringify(data),
         headers: {
            'Content-Type': 'application/json'
         }
@@ -49,26 +50,12 @@ export const updateData = async () => {
         return data;
     } else {
         console.log('error: ', response.status, response.statusText);
-        /* Handle the error returned by the HTTP request */
         return {error: {status: response.status, statusText: response.statusText}};
     };
 };
 
 
 
-// [PUT] /todos/user/<username>
-//       Content-Type: "application/json"
-//       BODY:
-//           [
-//               { label: "Make the bed", done: false },
-//               { label: "Walk the dog", done: false },
-//               { label: "Do the replits", done: false }
-//           ]
-
-//   RESPONSE:
-//       {
-//           "result": "A list with 3 todos was succesfully saved"
-//       }
 
 //       	// const [todoList, setTodoList] = useState([
 // 	// 	{done: false ,id:'',label: ""} 

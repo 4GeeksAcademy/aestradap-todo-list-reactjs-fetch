@@ -5,44 +5,60 @@ import { createData, getData, updateData } from './dataSync/todoFechtApi.jsx';
 const TodoList = () => {
 	
 	const [todoList, setTodoList] = useState([]);
-
 	
 	const [newTodo, setNewTodo] = useState('');
 
-	const getUserTodoList = async (defaultUser) => {
-		const defaultUserTodoList  = await getTodoList(defaultUser);
-		if(defaultUserTodoList) setTodoList(defaultUserTodoList);
-	};
-
 	useEffect(() => {
-		//const defaultUser = createNewTodoList('aestradap');
+		//createNewTodoList('aestradap');
 		getUserTodoList('aestradap');		
 	},[]);
+
+	const getUserTodoList = async (defaultUser) => {
+		const defaultUserTodoList  = await getData(defaultUser);
+		if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
+	};
+
+	const createNewTodoList = async (defaultUser) => {
+		const defaultUserTodoList  = await createData(defaultUser);
+		if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
+	};
+
+	const updateTodoList = async (defaultUser, todos) => {
+        const dataToPut = todos.flatMap( todo => (
+			todo && [{label: todo.label, done: false }]
+		));
+		const newUpdatedTodoList  = await updateData(defaultUser, dataToPut);
+		console.log(newUpdatedTodoList)
+		if(!newUpdatedTodoList.error) 
+			getUserTodoList(defaultUser);
+	};
 	
 	const handlerSummitTask = (e) => {
 		if (e.key === "Enter"){
-			setTodoList([
-				...todoList,
-				{
-					done: false,
-					id: todoList.length,
-					label:newTodo
-				}
-			]);
+			let newList = todoList;
+			newList.push({
+				done: false,
+				id: todoList.length,
+				label:newTodo
+			});
+
+			updateTodoList('aestradap', newList);
 			setNewTodo('');
 		}
 	}
 
-	const handlerEdit = (id, label) => {
-		console.log(id,label)
-        let newList = [...todoList];
-		newList[id] = {id:id, label: label};
-		setTodoList(newList);
+	const handlerEdit = (id, newlabel) => {
+       const newList = todoList.map(todo => {
+		 if( todo.id === id ){
+			todo.label = newlabel;
+			return todo;
+		 }});
+		updateTodoList('aestradap', newList);
     }
 
 	const handlerDelete = (id) => {
-		const newList = todoList.filter(todo => todo.id != id)
-        setTodoList(newList);
+		const newList = todoList.filter(todo => todo.id != id);
+		updateTodoList('aestradap', newList);
     }
 
 	return (

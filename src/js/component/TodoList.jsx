@@ -8,20 +8,35 @@ const TodoList = () => {
 	
 	const [newTodo, setNewTodo] = useState('');
 
+	const [currentUser, setCurrentUser] = useState('aestradap');
+	
+	const [users, setUsers] = useState(['aestradap']);
+	
+	const [newUser, setNewUser] =useState('');
+
 	useEffect(() => {
-		//createNewTodoList('aestradap');
-		getUserTodoList('aestradap');		
+		
+		getUserTodoList(currentUser);		
 	},[]);
+
+	useEffect(() => {
+		
+		getUserTodoList(currentUser);		
+	},[currentUser]);
+
 
 	const getUserTodoList = async (defaultUser) => {
 		const defaultUserTodoList  = await getData(defaultUser);
-		if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
+		if(!defaultUserTodoList.error){
+			setTodoList(defaultUserTodoList);
+		} else {
+			setTimeout(() => {
+				const defaultUserTodoList  = createData(defaultUser);
+				if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
+			  }, "1000");
+		}
 	};
 
-	const createNewTodoList = async (defaultUser) => {
-		const defaultUserTodoList  = await createData(defaultUser);
-		if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
-	};
 
 	const updateTodoList = async (defaultUser, todos) => {
         const dataToPut = todos.flatMap( todo => (
@@ -32,9 +47,24 @@ const TodoList = () => {
 		if(!newUpdatedTodoList.error) 
 			getUserTodoList(defaultUser);
 	};
+
 	
-	const handlerSummitTask = (e) => {
-		if (e.key === "Enter"){
+	const handlerSummitUser = (event) => {
+		if (event.key === "Enter"){
+			let newList = users;
+			newList.push(newUser);
+			setUsers(newList);
+			setNewUser('');
+			setCurrentUser(newUser);
+		}
+	}
+
+	const handlerChangeUser = (event) => {
+		setCurrentUser(event.target.value);
+	}
+
+	const handlerSummitTask = (event) => {
+		if (event.key === "Enter"){
 			let newList = todoList;
 			newList.push({
 				done: false,
@@ -42,7 +72,7 @@ const TodoList = () => {
 				label:newTodo
 			});
 
-			updateTodoList('aestradap', newList);
+			updateTodoList(currentUser, newList);
 			setNewTodo('');
 		}
 	}
@@ -64,15 +94,46 @@ const TodoList = () => {
 	return (
 		<div className="text-center">
 			<h1 className="text-center mt-5">TO-DOS</h1>
+			
 			<div className="container text-center">
+				<div className="row mt-4">
+					<div className="col"/>
+					<div className="col-4 pb-4">
+					<div className="input-group input-group-lg">
+  						<span className="input-group-text" id="inputGroup-sizing-lg">new user</span>
+  						<input type="text"
+							className="form-control"
+							aria-label="Sizing example input" 
+							aria-describedby="inputGroup-sizing-lg"
+							onChange={ event => setNewUser(event.target.value)}
+							onKeyDown={event => handlerSummitUser(event)}
+							value={newUser}
+						/>
+					</div>
+					</div>
+					<div className="col-4 pb-4">
+						<select className="form-select form-select-lg mb-3"
+						 	aria-label="Large select example"
+							onChange={event => handlerChangeUser(event)}
+						>
+							{
+								users.map((user, index)=>(<>
+									<option selected key={index} value={user}>{user}</option>
+								</>))
+							}
+						</select>
+					</div>
+					<div className="col"/>
+				</div>
+
 				
 				<input type="text" 
 							className="form-control border border-0 fs-3" 
 							placeholder="Write a to-do..." 
 							aria-label="Recipient's username"
 							aria-describedby="button-addon2"
-							onChange={ e => setNewTodo(e.target.value)}
-							onKeyDown={e => handlerSummitTask(e)}
+							onChange={ event => setNewTodo(event.target.value)}
+							onKeyDown={event => handlerSummitTask(event)}
 							value={newTodo}
 						/>
 				

@@ -15,7 +15,7 @@ export const createData = async ( username ) => {
     const data = await response.json();
     if (response.ok) {
         console.log(data.message);
-        return data;
+        return await getData(username);
     } else {
         console.log('error: ', response.status, response.statusText, data.message, data.msg);
         return {error: {status: response.status, statusText: response.statusText, message: data.message}};

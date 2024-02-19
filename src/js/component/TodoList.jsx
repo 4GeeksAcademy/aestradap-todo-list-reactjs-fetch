@@ -61,6 +61,7 @@ const TodoList = () => {
 
 	const handlerChangeUser = (event) => {
 		setCurrentUser(event.target.value);
+		getUserTodoList(event.target.value);
 	}
 
 	const handlerSummitTask = (event) => {

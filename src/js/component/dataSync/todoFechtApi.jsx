@@ -54,10 +54,23 @@ export const updateData = async (username, data) => {
     };
 };
 
+export const deleteData = async (username) => {
+    const response = await fetch(`${apiUrl}${username}`, {
+        method: 'DELETE',
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    } else {
+        console.log('error: ', response.status, response.statusText);
+        return {error: {status: response.status, statusText: response.statusText}};
+    };
+};
 
 
 
-//       	// const [todoList, setTodoList] = useState([
+
+//  // const [todoList, setTodoList] = useState([
 // 	// 	{done: false ,id:'',label: ""} 
 // 	// 	{id: 0 , label: "Make the Bed "},
 // 	// 	{id: 1, label: "Wash my hands"},

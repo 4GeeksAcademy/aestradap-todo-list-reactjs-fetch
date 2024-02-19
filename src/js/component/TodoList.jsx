@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Todo from './Todo';
-import { createData, getData, updateData } from './dataSync/todoFechtApi.jsx';
+import { createData, getData, updateData, deleteData } from './dataSync/todoFechtApi.jsx';
 
 const TodoList = () => {
 	
@@ -18,11 +18,6 @@ const TodoList = () => {
 		
 		getUserTodoList(currentUser);		
 	},[]);
-
-	// useEffect(() => {
-		
-	// 	getUserTodoList(currentUser);		
-	// },[currentUser]);
 
 
 	const getUserTodoList = async (defaultUser) => {
@@ -79,7 +74,7 @@ const TodoList = () => {
 		}
 	}
 
-	const handlerEdit = (id, newlabel) => {
+	const handlerEditTodo = (id, newlabel) => {
        const newList = todoList.map(todo => {
 		 if( todo.id === id ){
 			todo.label = newlabel;
@@ -88,9 +83,18 @@ const TodoList = () => {
 		updateTodoList(currentUser, newList);
     }
 
-	const handlerDelete = (id) => {
+	const handlerDeleteTodo = (id) => {
 		const newList = todoList.filter(todo => todo.id != id);
 		updateTodoList(currentUser, newList);
+    }
+
+	const HandlerDeleteUser = async () => {
+		const response = await deleteData(currentUser);
+		console.log(response);
+		const myList = users.filter((user) => user != currentUser);
+		setUsers(myList);
+		setCurrentUser(users.length - 1);
+		getUserTodoList(users.length - 1);
     }
 
 	return (
@@ -125,6 +129,14 @@ const TodoList = () => {
 							}
 						</select>
 					</div>
+					<div className="col-2 pb-4">
+						<button type="button" 
+							class="btn btn-danger btn-lg"
+							onClick={ HandlerDeleteUser }
+						>
+							Delete User
+						</button>
+					</div>
 					<div className="col"/>
 				</div>
 
@@ -134,8 +146,8 @@ const TodoList = () => {
 							placeholder="Write a to-do..." 
 							aria-label="Recipient's username"
 							aria-describedby="button-addon2"
-							onChange={ event => setNewTodo(event.target.value)}
-							onKeyDown={event => handlerSummitTask(event)}
+							onChange={ event => setNewTodo(event.target.value) }
+							onKeyDown={ event => handlerSummitTask(event) }
 							value={newTodo}
 						/>
 				
@@ -151,8 +163,8 @@ const TodoList = () => {
 										todo={todo}
 										todoList={todoList}
 										setTodoList={setTodoList}
-										handlerDelete={handlerDelete}
-										handlerEdit={handlerEdit}
+										handlerDelete={handlerDeleteTodo}
+										handlerEdit={handlerEditTodo}
 									/>
 									<hr className="border border-danger border-2 opacity-50"></hr>
 									</>

@@ -19,10 +19,10 @@ const TodoList = () => {
 		getUserTodoList(currentUser);		
 	},[]);
 
-	useEffect(() => {
+	// useEffect(() => {
 		
-		getUserTodoList(currentUser);		
-	},[currentUser]);
+	// 	getUserTodoList(currentUser);		
+	// },[currentUser]);
 
 
 	const getUserTodoList = async (defaultUser) => {
@@ -30,10 +30,9 @@ const TodoList = () => {
 		if(!defaultUserTodoList.error){
 			setTodoList(defaultUserTodoList);
 		} else {
-			setTimeout(() => {
-				const defaultUserTodoList  = createData(defaultUser);
-				if(!defaultUserTodoList.error) setTodoList(defaultUserTodoList);
-			  }, "1000");
+			const newUserTodoList  = await createData(defaultUser);
+			
+			if(!newUserTodoList.error) setTodoList(newUserTodoList);
 		}
 	};
 
@@ -45,17 +44,18 @@ const TodoList = () => {
 		const newUpdatedTodoList  = await updateData(defaultUser, dataToPut);
 		console.log(newUpdatedTodoList)
 		if(!newUpdatedTodoList.error) 
-			getUserTodoList(defaultUser);
+		await getUserTodoList(defaultUser);
 	};
 
 	
 	const handlerSummitUser = (event) => {
-		if (event.key === "Enter"){
-			let newList = users;
-			newList.push(newUser);
-			setUsers(newList);
+		if (event.key === "Enter" && users.length >= 1){
+			let newUsers = users;
+			newUsers.push(newUser);
+			setUsers(newUsers);
 			setNewUser('');
 			setCurrentUser(newUser);
+			getUserTodoList(newUser);
 		}
 	}
 
@@ -64,7 +64,8 @@ const TodoList = () => {
 	}
 
 	const handlerSummitTask = (event) => {
-		if (event.key === "Enter"){
+		console.log(event.target.value)
+		if (event.key === "Enter" && todoList){
 			let newList = todoList;
 			newList.push({
 				done: false,
@@ -83,12 +84,12 @@ const TodoList = () => {
 			todo.label = newlabel;
 			return todo;
 		 }});
-		updateTodoList('aestradap', newList);
+		updateTodoList(currentUser, newList);
     }
 
 	const handlerDelete = (id) => {
 		const newList = todoList.filter(todo => todo.id != id);
-		updateTodoList('aestradap', newList);
+		updateTodoList(currentUser, newList);
     }
 
 	return (
